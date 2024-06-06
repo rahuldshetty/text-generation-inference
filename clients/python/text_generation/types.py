@@ -9,6 +9,7 @@ from text_generation.errors import ValidationError
 class GrammarType(str, Enum):
     Json = "json"
     Regex = "regex"
+    Cfg = "cfg"
 
 
 # Grammar type and value

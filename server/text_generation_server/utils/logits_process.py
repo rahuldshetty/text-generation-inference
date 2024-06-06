@@ -5,7 +5,7 @@ from loguru import logger
 from typing import Dict, Union
 from text_generation_server.pb.generate_pb2 import GrammarType
 
-from outlines.fsm.fsm import RegexFSM
+from outlines.fsm.fsm import RegexFSM, CFGFSM
 from outlines.fsm.json_schema import build_regex_from_schema
 from functools import lru_cache
 from typing import List, Optional, DefaultDict
@@ -522,9 +522,11 @@ class GrammarLogitProcessor(LogitsProcessor):
         start_time = time.time()
         if grammar_type == GrammarType.GRAMMAR_TYPE_JSON:
             schema = build_regex_from_schema(schema)
+            fsm = RegexFSM(schema, tokenizer)
         elif grammar_type == GrammarType.GRAMMAR_TYPE_REGEX:
-            pass  # schema is already a regex just here for clarity
-        fsm = RegexFSM(schema, tokenizer)
+            fsm = RegexFSM(schema, tokenizer)
+        elif grammar_type == GrammarType.GRAMMAR_TYPE_CFG:
+            fsm = CFGFSM(schema, tokenizer)
         logger.debug(f"Compiled FSM in {time.time() - start_time:.2f}s")
         return fsm
 
